@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const morgan = require('morgan'); 
 const connectDb = require('./db'); 
 const adminRoutes = require('./adminroutes'); 
+const userRoutes = require('./useroutes'); 
 
 
 const app = express(); 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(morgan('dev')); 
 app.use(express.urlencoded()); 
 app.use('/api/v1/admin', adminRoutes); 
+app.use('/api/v1/user', userRoutes); 
 
 
 app.listen(PORT, () =>{
