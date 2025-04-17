@@ -1,8 +1,12 @@
 const express = require('express'); 
+const { inviteadmin, adminsignup } = require('./admincontroller');
+
 const router = express.Router(); 
 
 
-Router.get('/inviteadmin',); 
+router.post('/inviteadmin', inviteadmin); 
+router.patch('/adminsignup', adminsignup); 
+
 
 
 
