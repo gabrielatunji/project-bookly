@@ -32,11 +32,7 @@ exports.inviteadmin = async (req, res) => {
         await invitedAdmin.save();
 
         // Send response with signup link
-        return res.status(200).json({ 
-            message: 'Invite link generated successfully',
-            signupLink,
-            expiresIn: '30 minutes'
-        });
+        return res.status(200).json({ message: 'Invite link generated successfully', signupLink, expiresIn: '30 minutes'}); 
 
     } catch (error) {
         console.error('Invite admin error:', error);
@@ -50,8 +46,8 @@ exports.adminsignup = async (req, res) => {
     
     try {
         // Verify token from header
-        if (!adminInfo || !adminInfo.startsWith('Bearer')) {
-            return res.status(401).json({ message: 'Invalid authorization header' });
+        if (!adminInfo) {
+            return res.status(401).json({ message: 'Unauthorized' });
         }
 
         const token = adminInfo.split(' ')[1];
@@ -94,5 +90,30 @@ exports.adminsignup = async (req, res) => {
             return res.status(401).json({ message: 'Invalid token' });
         }
         return res.status(500).json({ message: 'Server Error' });
+    }
+};
+
+exports.adminlogin = async (req, res) => {
+    const {email, password} = req.body; 
+    try{
+        if(!email || !password) {
+            return res.status(401).json({message: "Input Login Details"})
+        }
+        
+        const admin = await Admin.findOne({email})
+        if(!admin){
+            return res.status(404).json({message: "Admin not found"})
+        }
+        const matchPass = await bcrypt.compare(password, admin.password)
+        if(!matchPass){
+            return res.status(403).json({message: "Invalid Credentials"})
+        }
+        admin.lastLogin = new Date(); 
+        await admin.save(); 
+
+        return res.status(200).json({message: 'Logged in Successfully'})
+    }catch(error){
+        console.log(error)
+        return res.status(500).json({message: 'Internal Server Error'})
     }
 };

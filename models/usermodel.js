@@ -8,10 +8,11 @@ const userModel = new mongoose.Schema({
     savingAmount: {type: String}, 
     totalSavings: {type: String}, 
     image: {type: String}, 
-    savedItems: {type: String},
-     
+    savedItems: {type: String}, 
 }, 
+
 {timestamps: true}
+
 ); 
 
 module.exports = mongoose.model('user', userModel); 
