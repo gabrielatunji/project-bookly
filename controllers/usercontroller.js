@@ -1,5 +1,6 @@
 const User = require('../models/usermodel'); 
 const bcrypt = require('bcryptjs'); 
+const cloudinary = require('cloudinary').v2
 
 exports.usersignup = async (req, res) => {
     const {name, email, password} = req.body; 
@@ -41,3 +42,29 @@ exports.userlogin = async (req, res) => {
         return res.status(500).json({message: "Server Error"})
     }
 }; 
+
+exports.saveItems = async (req, res) => {
+    const {location, savingAmount} = req.body; 
+    const filePath = req.file.path; 
+    const {_id} = req.query; 
+    try{
+        cloudinary.config({ 
+            cloud_name: process.env.CLOUD_NAME, 
+            api_key: process.env.API_KEY, 
+            api_secret: process.env.API_SECRET
+        });
+
+        const parent = await User.findOne({_id});  
+        const uploadResult = await cloudinary.uploader.upload(filePath,
+            { public_id: `image/${parent.name}_${parent.email}`,
+              folder: 'Bookly'
+           }); 
+        const parentSave = await User.findOneAndUpdate({_id}, 
+            {location: location, image: uploadResult.secure_url, savingAmount: savingAmount}, 
+            {new: true}); 
+            return res.status(200).json({message: `You will need to save ${parentSave.savingAmount} towards the item`})
+       }catch(error){
+           console.log(error);
+           res.status(500).json({error: 'upload failed, Items not Saved'})
+       };
+};

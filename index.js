@@ -2,8 +2,8 @@ const express = require('express');
 const dotenv = require('dotenv'); 
 const morgan = require('morgan'); 
 const connectDb = require('./db'); 
-const adminRoutes = require('./adminroutes'); 
-const userRoutes = require('./useroutes'); 
+const adminRoutes = require('./routers/adminroutes'); 
+const userRoutes = require('./routers/useroutes'); 
 
 
 const app = express(); 
