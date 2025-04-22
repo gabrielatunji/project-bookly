@@ -1,7 +1,9 @@
 const Admin = require('../models/adminmodel'); 
+const Product = require('../models/productmodel'); 
 const jwt = require('jsonwebtoken'); 
 const bcrypt = require('bcryptjs');
 require('dotenv').config(); 
+const cloudinary = require('cloudinary').v2; 
 
 exports.inviteadmin = async (req, res) => {
     const { name, email } = req.body;
@@ -17,7 +19,7 @@ exports.inviteadmin = async (req, res) => {
         { email, name }, process.env.SECRET_KEY,{ expiresIn: '30m' }
         );
     
-        // Generate signup link with base URL from env
+        //generate signuplink 
         const signupLink = `http://localhost:${process.env.PORT}/api/admin/signup/${signupToken}`;
 
         // Save invited admin to database
@@ -76,7 +78,7 @@ exports.adminsignup = async (req, res) => {
 
         await invitedAdmin.save();
 
-        return res.status(200).json({
+        return res.status(201).json({
             message: 'Admin signup successful',
             data: {
                 name: invitedAdmin.name,
@@ -108,12 +110,47 @@ exports.adminlogin = async (req, res) => {
         if(!matchPass){
             return res.status(403).json({message: "Invalid Credentials"})
         }
+
         admin.lastLogin = new Date(); 
         await admin.save(); 
-
         return res.status(200).json({message: 'Logged in Successfully'})
     }catch(error){
         console.log(error)
         return res.status(500).json({message: 'Internal Server Error'})
     }
 };
+
+
+exports.adminuploadproduct = async (req, res) => {
+        const {productName, productAmount} = req.body
+        const filePath = req.file.path 
+
+    try{
+        if(!productName || !productAmount){
+            return res.status(400).json({message: 'Ensure to fill all fields'})
+        }
+
+        cloudinary.config({ 
+                    cloud_name: process.env.CLOUD_NAME, 
+                    api_key: process.env.API_KEY, 
+                    api_secret: process.env.API_SECRET
+        }); 
+        const uploadResult = await cloudinary.uploader.upload(filePath,
+                    { public_id: `image/${productName}`,
+                      folder: 'Bookly'
+                   }); 
+        const newProduct = new Product({
+            productName, 
+            productAmount,
+            productImage: uploadResult.secure_url
+        })
+
+        await newProduct.save(); 
+        return res.status(201).json({message: "New Product Saved"})
+            
+    }catch(error){
+        console.log(error);
+        res.status(500).json({error: "Product not saved"})
+    };
+};        
+

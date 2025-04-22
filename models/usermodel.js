@@ -1,9 +1,11 @@
 const mongoose = require('mongoose'); 
 
 const userModel = new mongoose.Schema({
-    name: {type: String, required: true},
+    firstname: {type: String, required: true},
+    lastName: {type: String},
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true}, 
+    googleId: {type: String}, 
     location: {type: String}, 
     savingAmount: {type: String}, 
     totalSavings: {type: String}, 

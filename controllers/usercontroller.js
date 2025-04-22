@@ -1,6 +1,7 @@
 const User = require('../models/usermodel'); 
 const bcrypt = require('bcryptjs'); 
 const cloudinary = require('cloudinary').v2
+const Product = require('../models/productmodel'); 
 
 exports.usersignup = async (req, res) => {
     const {name, email, password} = req.body; 
@@ -15,7 +16,7 @@ exports.usersignup = async (req, res) => {
             const hashedPassword = await bcrypt.hash(password, 10); 
             const newUser = new User({name, email, password: hashedPassword})
             await newUser.save(); 
-        return res.status(200).json({message: "Signed up Successfully", data: name, email})
+        return res.status(201).json({message: "Signed up Successfully", data: name, email})
     }catch(error){
         console.log(error)
         res.status(500).json({message: "Server Error"})
@@ -62,9 +63,49 @@ exports.saveItems = async (req, res) => {
         const parentSave = await User.findOneAndUpdate({_id}, 
             {location: location, image: uploadResult.secure_url, savingAmount: savingAmount}, 
             {new: true}); 
-            return res.status(200).json({message: `You will need to save ${parentSave.savingAmount} towards the item`})
+            return res.status(201).json({message: `You will need to save ${parentSave.savingAmount} towards the item`})
        }catch(error){
            console.log(error);
            res.status(500).json({error: 'upload failed, Items not Saved'})
        };
 };
+
+
+exports.viewItems = async (req, res) => {
+    try {
+        // Get page number from query params, default to page 1
+        const page = req.query.page;
+        const limit = 5; // Items per page
+        
+        // Calculate skip value for pagination
+        const skip = (page - 1) * limit;
+
+        // Get total count of items
+        const totalItems = await Product.countDocuments();
+        const totalPages = Math.ceil(totalItems / limit);
+
+        // Fetch paginated items
+        const items = await Product.find().skip(skip).limit(limit)
+
+        if (!items || items.length === 0) {
+            return res.status(404).json({message: 'Products Unavailable right now. Check back!'});
+        }
+
+        return res.status(200).json({data: {items, currentPage: page,totalPages},
+            pagination: {
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1,
+                nextPage: page < totalPages ? page + 1 : null,
+                prevPage: page > 1 ? page - 1 : null
+            }
+        });
+    } catch (error) {
+        console.error('View items error:', error);
+        return res.status(500).json({
+            success: false,
+            message: "Error Fetching Products",
+            error: error.message
+        });
+    }
+};
+
