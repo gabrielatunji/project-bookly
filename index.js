@@ -8,6 +8,7 @@ const passport = require('passport');
 const authRoutes = require('./routers/authroutes'); 
 require('./passport.setup'); 
 const session = require('express-session');
+const path = require('path');
 
 const app = express(); 
 dotenv.config(); 
@@ -27,6 +28,13 @@ app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/user', userRoutes); 
 app.use('/auth', authRoutes); 
 app.use(express.static('views'));
+app.use(express.static(path.join(__dirname, 'views')));
+
+// Set up view engine
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+
 
 app.listen(PORT, () =>{
     connectDb(); 

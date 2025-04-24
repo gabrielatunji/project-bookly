@@ -1,11 +1,11 @@
 const passport = require('passport'); 
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy; 
 const User = require('./models/usermodel'); 
 
 // Serialize user for the session
 passport.serializeUser((user, done) => {
     done(null, user.id);
-});
+}); 
 
 // Deserialize user from the session
 passport.deserializeUser(async (id, done) => {
@@ -15,13 +15,13 @@ passport.deserializeUser(async (id, done) => {
     } catch (error) {
         done(error, null);
     }
-});
+}); 
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:4900/auth/google/callback"
-    //scope: ['profile', 'email']
+    callbackURL: "http://localhost:4900/auth/google/dashboard",
+    scope: ['profile', 'email']
 }, 
 async (accessToken, refreshToken, profile, done) => {
     try {

@@ -2,6 +2,8 @@ const User = require('../models/usermodel');
 const bcrypt = require('bcryptjs'); 
 const cloudinary = require('cloudinary').v2
 const Product = require('../models/productmodel'); 
+const flutterwave = require('../flutterwave'); 
+const { generatePaymentLink } = require('../flutterwave'); 
 
 exports.usersignup = async (req, res) => {
     const {name, email, password} = req.body; 
@@ -109,3 +111,30 @@ exports.viewItems = async (req, res) => {
     }
 };
 
+
+
+exports.makePayment = async (req, res) => {
+    const { _id } = req.query;
+
+    try {
+        const user = await User.find({_id});
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (user.savingAmount <= 0) {
+            return res.status(400).json({ message: "No saved items to pay for" });
+        }
+
+        const paymentLink = await generatePaymentLink(_id); 
+        return res.status(200).json({
+            message: "Payment link generated successfully",
+            paymentLink
+        });
+    } catch (error) {
+        console.error("Make payment error:", error);
+        return res.status(500).json({
+            message: "Failed to generate payment link",
+            error: error.message
+        });
+    }
+};
