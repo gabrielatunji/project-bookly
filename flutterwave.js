@@ -4,13 +4,11 @@ const User = require('./models/usermodel');
 
 const generatePaymentLink = async (email) => {
     try {
-        // Fetch user from the database
         const user = await User.findById(email);
         if (!user) {
             throw new Error("User not found");
         }
 
-        // Generate payment link
         const response = await axios.post(
             'https://api.flutterwave.com/v3/payments',
             {

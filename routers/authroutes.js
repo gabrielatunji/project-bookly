@@ -12,8 +12,14 @@ router.get('/google', passport.authenticate('google',
 
 //router.get('/google/dashboard', passport.authenticate('google')
 
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/' }),
-    function(req, res) {res.redirect('/dashboard.html');})
+router.get('/auth/google/dashboard', (req, res, next) => {
+            console.log("Google callback hit"); 
+            next(); 
+    },  
+ passport.authenticate('google', (req, res) => 
+    {res.redirect('/dashboard.html')})
+
+)
 
 module.exports = router;
 
