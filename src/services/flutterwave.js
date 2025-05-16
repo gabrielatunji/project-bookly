@@ -44,3 +44,4 @@ const generatePaymentLink = async (email) => {
 };
 
 module.exports = { generatePaymentLink };
+

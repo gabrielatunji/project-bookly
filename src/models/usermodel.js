@@ -8,9 +8,10 @@ const userModel = new mongoose.Schema({
     googleId: {type: String}, 
     location: {type: String}, 
     savingAmount: {type: Number}, 
-    totalSavings: {type: String}, 
+    totalAmount: {type: String}, 
     image: {type: String}, 
     savedItems: {type: String}, 
+    paymentStatus: {type: String}
 }, 
 
 {timestamps: true}
