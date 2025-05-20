@@ -5,9 +5,10 @@ const passport = require('passport');
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
-router.get('/auth/google/dashboard', passport.authenticate('google', 
-    { failureRedirect: '/login' }, {successRedirect: '/dashboard.html'}),
-); 
+router.get('/auth/google/dashboard', passport.authenticate('google'),
+    (req, res) => {res.redirect('/dashboard.html');
+
+    }); 
 
 router.get('/facebook', passport.authenticate('facebook'));
   
