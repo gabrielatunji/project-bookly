@@ -3,7 +3,7 @@ const Product = require('../models/productmodel');
 const jwt = require('jsonwebtoken'); 
 const bcrypt = require('bcryptjs');
 require('dotenv').config(); 
-const cloudinary = require('cloudinary').v2; 
+const cloudinary = require('../middleware/cloudinary');
 
 exports.inviteadmin = async (req, res) => {
     const { name, email } = req.body;
@@ -52,7 +52,7 @@ exports.adminsignup = async (req, res) => {
             return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        const token = adminInfo.split(' ')[1];
+        const token = adminInfo.split(' ')[1]; 
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         const { email } = decoded;
 
@@ -130,18 +130,14 @@ exports.adminuploadproduct = async (req, res) => {
             return res.status(400).json({message: 'Ensure to fill all fields'})
         }
 
-        cloudinary.config({ 
-                    cloud_name: process.env.CLOUD_NAME, 
-                    api_key: process.env.API_KEY, 
-                    api_secret: process.env.API_SECRET
-        }); 
         const uploadResult = await cloudinary.uploader.upload(filePath,
                     { public_id: `image/${productName}`,
                       folder: 'Bookly'
                    }); 
+
         const newProduct = new Product({
             productName, 
-            productAmount,
+            productAmount, 
             productImage: uploadResult.secure_url
         })
 

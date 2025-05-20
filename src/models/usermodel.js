@@ -6,6 +6,7 @@ const userModel = new mongoose.Schema({
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true}, 
     googleId: {type: String}, 
+    facebookId: {type: String},
     location: {type: String}, 
     savingAmount: {type: Number}, 
     totalAmount: {type: String}, 

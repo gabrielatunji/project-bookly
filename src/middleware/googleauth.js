@@ -2,20 +2,6 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy; 
 const User = require('../models/usermodel'); 
 
-// Serialize user for the session
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-}); 
-
-// Deserialize user from the session
-passport.deserializeUser(async (id, done) => {
-    try {
-        const user = await User.findById(id);
-        done(null, user);
-    } catch (error) {
-        done(error, null);
-    }
-}); 
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -48,7 +34,22 @@ async (accessToken, refreshToken, profile, done) => {
 }));
 
 
+// Serialize user for the session
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+}); 
 
+// Deserialize user from the session
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findById(id);
+        done(null, user);
+    } catch (error) {
+        done(error, null);
+    }
+}); 
+
+module.exports = passport;
 
 
 

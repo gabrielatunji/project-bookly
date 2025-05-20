@@ -1,9 +1,9 @@
-const User = require('../../models/usermodel'); 
+const User = require('../models/usermodel'); 
 const bcrypt = require('bcryptjs'); 
 const cloudinary = require('cloudinary').v2
-const Product = require('../../models/productmodel'); 
-const flutterwave = require('../../flutterwave'); 
-const { generatePaymentLink } = require('../../flutterwave'); 
+const Product = require('../models/productmodel'); 
+const flutterwave = require('../services/flutterwave'); 
+const { generatePaymentLink } = require('../services/flutterwave'); 
 
 exports.usersignup = async (req, res) => {
     const {name, email, password} = req.body; 

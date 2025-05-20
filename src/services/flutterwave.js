@@ -1,6 +1,6 @@
 require('dotenv').config();
 const axios = require('axios');
-const User = require('./models/usermodel');
+const User = require('../models/usermodel');
 
 const generatePaymentLink = async (email) => {
     try {

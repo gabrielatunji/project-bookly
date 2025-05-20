@@ -1,13 +1,13 @@
 const express = require('express'); 
 const dotenv = require('dotenv'); 
 const morgan = require('morgan'); 
-const connectDb = require('./db'); 
-const adminRoutes = require('./routers/adminroutes'); 
-const userRoutes = require('./routers/useroutes'); 
+const connectDb = require('./src/config/db'); 
+const adminRoutes = require('./src/routers/adminroutes'); 
+const userRoutes = require('./src/routers/useroutes'); 
+const authRoutes = require('./src/routers/authroutes'); 
 const passport = require('passport'); 
-const authRoutes = require('./routers/authroutes'); 
-require('./passport.setup');
-const path = require('path');
+require('./src/middleware/googleauth');
+require('./src/middleware/facebookauth');
 
 const app = express(); 
 dotenv.config(); 
@@ -21,11 +21,6 @@ app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/user', userRoutes); 
 app.use('/auth', authRoutes); 
 app.use(express.static('views'));
-app.use(express.static(path.join(__dirname, 'views')));
-
-// Set up view engine
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
 
 
 
